@@ -25,8 +25,10 @@ headers = {
 }
 
 page = requests.get(URL, headers=headers)
+print(page.status_code)
 
 soup = BeautifulSoup(page.text, "html.parser")
+print(page.text[:1000])
 
 found = False
 
