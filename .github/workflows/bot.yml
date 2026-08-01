@@ -1,18 +1,27 @@
-steps:
-  - uses: actions/checkout@v4
+name: Beer Bot
 
-  - uses: actions/setup-python@v5
-    with:
-      python-version: "3.13"
+on:
+  workflow_dispatch:
 
-  - run: pip install -r requirements.txt
+jobs:
+  run:
+    runs-on: ubuntu-latest
 
-  - name: Install Playwright
-    run: |
-      playwright install chromium
+    steps:
+      - uses: actions/checkout@v4
 
-  - name: Run bot
-    env:
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      CHAT_ID: ${{ secrets.CHAT_ID }}
-    run: python main.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - run: pip install -r requirements.txt
+
+      - name: Install Playwright
+        run: |
+          playwright install chromium
+
+      - name: Run bot
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python main.py
