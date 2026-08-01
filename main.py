@@ -1,13 +1,12 @@
 import os
 import requests
-from bs4 import BeautifulSoup
+
+from playwright.sync_api import sync_playwright
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 URL = "https://rozetka.com.ua/ua/search/?text=пиво%2024"
-
-LIMIT = 700
 
 
 def send(text):
@@ -20,37 +19,18 @@ def send(text):
     )
 
 
-headers = {
-    "User-Agent": "Mozilla/5.0"
-}
+with sync_playwright() as p:
 
-page = requests.get(URL, headers=headers)
-print(page.status_code)
+    browser = p.chromium.launch(headless=True)
 
-soup = BeautifulSoup(page.text, "html.parser")
-print(page.text[:1000])
+    page = browser.new_page()
 
-found = False
+    page.goto(URL, wait_until="networkidle")
 
-for item in soup.find_all("span"):
+    print(page.title())
 
-    text = item.get_text(strip=True)
+    print(page.content()[:1000])
 
-    if text.endswith("₴"):
+    browser.close()
 
-        price = "".join(ch for ch in text if ch.isdigit())
-
-        if price:
-
-            price = int(price)
-
-            if price <= LIMIT:
-
-                send(f"🍺 Знайдено пиво за {price} грн!\n{URL}")
-
-                found = True
-
-                break
-
-if not found:
-    send("Нічого дешевше 700 грн не знайдено.")
+send("Playwright успішно завершив роботу!")
